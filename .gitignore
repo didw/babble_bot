@@ -1,0 +1,65 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.git/
+
+# IntelliJ related
+*.iml
+.idea/
+
+# Visual Studio Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.packages
+.pub/
+.pub-cache/
+/build/
+
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# Android related
+**/android
+*.jks
+*.keystore
+google-services.json  # <- Firebase config should not be committed
+
+# iOS related
+**/ios
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+*.xccheckout
+*.xcscmblueprint
+*.ipa
+*.dSYM
+
+# web related
+**/web
+lib/generated_plugin_registrant.dart
+
+# windows related
+**/windows
+
+# linux related
+**/linux
+
+# macos related
+**/macos
+
+# Exceptions to above rules.
+!default.pbxuser
+!default.perspectivev3
+!/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
