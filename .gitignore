@@ -63,3 +63,10 @@ lib/generated_plugin_registrant.dart
 !default.pbxuser
 !default.perspectivev3
 !/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# firebase api key
+firebase_service.json
+
+# google api key
+google_api_service.json
+
