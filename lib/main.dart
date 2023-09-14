@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'stt_service.dart';
 import 'audio_service.dart'; // 오디오 처리 파일 import
 import 'permission_service.dart'; // 권한 처리 파일 import
+import 'package:record/record.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,12 +42,28 @@ class _MyHomePageState extends State<MyHomePage> {
     permissionService = PermissionService();
   }
 
+  Future<void> _prepareAudioFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    audioFile = File('${directory.path}/audio_sample.flac');
+  }
+
+  Future<void> _doTranscription() async {
+    setState(() {});
+    final sttService = SttService();
+    final text = await sttService.transcribeAudio(audioFile);
+
+    setState(() {
+      transcribedText = text;
+    });
+  }
+
   Future<void> _startRecording() async {
     final micPermission = await permissionService.requestMicrophonePermission();
     final filePermission = await permissionService.requestFilePermission();
 
     if (micPermission && filePermission) {
       await audioService.startRecording(audioFile.path);
+      setState(() {});
     } else {
       showDialog(
         context: context,
@@ -64,20 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _prepareAudioFile() async {
-    final directory = await getApplicationDocumentsDirectory();
-    audioFile = File('${directory.path}/audio_sample.flac');
-  }
-
-  Future<void> _doTranscription() async {
-    final sttService = SttService();
-    final text = await sttService.transcribeAudio(audioFile);
-
-    setState(() {
-      transcribedText = text;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,11 +90,13 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Text(transcribedText), // 변환된 텍스트 출력
             ElevatedButton(
-              onPressed: audioService.isRecording ? null : _startRecording,
+              onPressed: audioService.recordState != RecordState.record
+                  ? _startRecording
+                  : null,
               child: const Text('STT 시작'),
             ),
             ElevatedButton(
-              onPressed: audioService.isRecording
+              onPressed: audioService.recordState == RecordState.record
                   ? () async {
                       await audioService.stopRecording();
                       await _doTranscription();

@@ -36,7 +36,7 @@ dependencies:
   googleapis_auth: ^1.4.1
   http: ^1.1.0
   permission_handler: ^11.0.0
-  flutter_sound: ^9.2.13
+  record: ^4.4.4
   path_provider: ^2.1.1
 
 

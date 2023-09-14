@@ -1,28 +1,48 @@
-import 'dart:io';
-import 'package:flutter_sound/flutter_sound.dart';
+import 'dart:async';
+import 'package:record/record.dart';
 
 class AudioService {
-  FlutterSoundRecorder? _recorder;
-  bool _isRecording = false;
+  final Record _audioRecorder = Record();
+  StreamSubscription<RecordState>? _recordSub;
+  RecordState _recordState = RecordState.stop;
 
   AudioService() {
-    _recorder = FlutterSoundRecorder();
+    _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
+      _recordState = recordState;
+    });
   }
 
   Future<void> startRecording(String path) async {
-    await _recorder!.openRecorder();
-    await _recorder!.startRecorder(
-      toFile: path,
-      codec: Codec.pcm16,
-    );
-    _isRecording = true;
+    try {
+      if (await _audioRecorder.hasPermission()) {
+        // Starting the recording
+        await _audioRecorder.start(
+          path: path, // specify the path to save the audio recording
+          encoder: AudioEncoder.aacLc, // specify the encoder
+        );
+        _recordState = RecordState.record;
+      }
+    } catch (e) {
+      print('Failed to start recording: $e');
+    }
   }
 
   Future<void> stopRecording() async {
-    await _recorder!.stopRecorder();
-    await _recorder!.closeRecorder();
-    _isRecording = false;
+    try {
+      final path = await _audioRecorder.stop();
+      if (path != null) {
+        print('Recording stopped and saved to: $path');
+      }
+      _recordState = RecordState.stop;
+    } catch (e) {
+      print('Failed to stop recording: $e');
+    }
   }
 
-  bool get isRecording => _isRecording;
+  RecordState get recordState => _recordState;
+
+  void dispose() {
+    _recordSub?.cancel();
+    _audioRecorder.dispose();
+  }
 }
