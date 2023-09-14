@@ -25,16 +25,23 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String transcribedText = "";
-  late AudioService audioService;
+  late AudioRecorderService audioRecorderService;
   late File audioFile;
   late PermissionService permissionService;
 
   @override
   void initState() {
     super.initState();
-    audioService = AudioService();
-    _prepareAudioFile();
     permissionService = PermissionService();
+    audioRecorderService = AudioRecorderService();
+    audioRecorderService.init();
+    _prepareAudioFile();
+  }
+
+  @override
+  void dispose() {
+    audioRecorderService.dispose();
+    super.dispose();
   }
 
   Future<void> _startRecording() async {
@@ -42,7 +49,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final filePermission = await permissionService.requestFilePermission();
 
     if (micPermission && filePermission) {
-      await audioService.startRecording(audioFile.path);
+      final directory = await getApplicationDocumentsDirectory();
+      await audioRecorderService
+          .startRecording('${directory.path}/audio_sample.flac');
     } else {
       showDialog(
         context: context,
@@ -58,6 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     }
+  }
+
+  // 녹음 종료 및 STT 호출
+  Future<void> _stopRecording() async {
+    await audioRecorderService.stopRecording();
+    await _doTranscription();
   }
 
   Future<void> _prepareAudioFile() async {
@@ -83,16 +98,11 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Text(transcribedText), // 변환된 텍스트 출력
             ElevatedButton(
-              onPressed: audioService.isRecording ? null : _startRecording,
+              onPressed: _startRecording,
               child: Text('STT 시작'),
             ),
             ElevatedButton(
-              onPressed: audioService.isRecording
-                  ? () async {
-                      await audioService.stopRecording();
-                      await _doTranscription();
-                    }
-                  : null,
+              onPressed: _stopRecording,
               child: Text('STT 종료'),
             ),
           ],
