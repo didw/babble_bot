@@ -13,10 +13,9 @@ class SttService {
   }
 
   Future<String> _loadApiKey() async {
-    final jsonStr =
-        await rootBundle.loadString('assets/google_api_service.json');
+    final jsonStr = await rootBundle.loadString('assets/google_api_key.json');
     final jsonMap = jsonDecode(jsonStr);
-    return jsonMap['private_key'] as String;
+    return jsonMap['api_key'] as String;
   }
 
   Future<String> transcribeAudio(File audioFile) async {

@@ -68,8 +68,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-  - assets/google_api_service.json
-  - assets/firebase_service.json
+    - assets/google_api_service.json
+    - assets/google_api_key.json
+    - assets/firebase_service.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
