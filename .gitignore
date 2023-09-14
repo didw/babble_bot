@@ -30,9 +30,9 @@
 
 # Android related
 **/android
+!android/app/src/main/AndroidManifest.xml
 *.jks
 *.keystore
-google-services.json  # <- Firebase config should not be committed
 
 # iOS related
 **/ios
@@ -63,3 +63,10 @@ lib/generated_plugin_registrant.dart
 !default.pbxuser
 !default.perspectivev3
 !/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# firebase api key
+assets/firebase_service.json
+
+# google api key
+assets/google_api_service.json
+
