@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'stt_service.dart';
 import 'audio_service.dart'; // 오디오 처리 파일 import
-import 'permission_service.dart';
+import 'permission_service.dart'; // 권한 처리 파일 import
 
 void main() {
   runApp(MyApp());
@@ -25,23 +25,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String transcribedText = "";
-  late AudioRecorderService audioRecorderService;
+  late AudioService audioService;
   late File audioFile;
   late PermissionService permissionService;
 
   @override
   void initState() {
     super.initState();
-    permissionService = PermissionService();
-    audioRecorderService = AudioRecorderService();
-    audioRecorderService.init();
+    audioService = AudioService();
     _prepareAudioFile();
-  }
-
-  @override
-  void dispose() {
-    audioRecorderService.dispose();
-    super.dispose();
+    permissionService = PermissionService();
   }
 
   Future<void> _startRecording() async {
@@ -49,9 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final filePermission = await permissionService.requestFilePermission();
 
     if (micPermission && filePermission) {
-      final directory = await getApplicationDocumentsDirectory();
-      await audioRecorderService
-          .startRecording('${directory.path}/audio_sample.flac');
+      await audioService.startRecording(audioFile.path);
     } else {
       showDialog(
         context: context,
@@ -67,12 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     }
-  }
-
-  // 녹음 종료 및 STT 호출
-  Future<void> _stopRecording() async {
-    await audioRecorderService.stopRecording();
-    await _doTranscription();
   }
 
   Future<void> _prepareAudioFile() async {
@@ -98,11 +83,16 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Text(transcribedText), // 변환된 텍스트 출력
             ElevatedButton(
-              onPressed: _startRecording,
+              onPressed: audioService.isRecording ? null : _startRecording,
               child: Text('STT 시작'),
             ),
             ElevatedButton(
-              onPressed: _stopRecording,
+              onPressed: audioService.isRecording
+                  ? () async {
+                      await audioService.stopRecording();
+                      await _doTranscription();
+                    }
+                  : null,
               child: Text('STT 종료'),
             ),
           ],

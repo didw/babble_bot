@@ -1,26 +1,28 @@
+import 'dart:io';
 import 'package:flutter_sound/flutter_sound.dart';
 
-class AudioRecorderService {
-  FlutterSoundRecorder? myRecorder;
+class AudioService {
+  FlutterSoundRecorder? _recorder;
+  bool _isRecording = false;
 
-  Future<void> init() async {
-    myRecorder = FlutterSoundRecorder();
-    await myRecorder!.openRecorder();
-  }
-
-  Future<void> dispose() async {
-    await myRecorder!.closeRecorder();
-    myRecorder = null;
+  AudioService() {
+    _recorder = FlutterSoundRecorder();
   }
 
   Future<void> startRecording(String path) async {
-    await myRecorder!.startRecorder(
+    await _recorder!.openRecorder();
+    await _recorder!.startRecorder(
       toFile: path,
-      codec: Codec.pcm16WAV,
+      codec: Codec.pcm16,
     );
+    _isRecording = true;
   }
 
   Future<void> stopRecording() async {
-    await myRecorder!.stopRecorder();
+    await _recorder!.stopRecorder();
+    await _recorder!.closeRecorder();
+    _isRecording = false;
   }
+
+  bool get isRecording => _isRecording;
 }
