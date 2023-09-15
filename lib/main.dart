@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _prepareAudioFile() async {
     final directory = await getApplicationDocumentsDirectory();
-    audioFile = File('${directory.path}/audio_sample.flac');
+    audioFile = File('${directory.path}/audio_sample.wav');
   }
 
   Future<void> _doTranscription() async {

@@ -18,7 +18,7 @@ class AudioService {
         // Starting the recording
         await _audioRecorder.start(
           path: path, // specify the path to save the audio recording
-          encoder: AudioEncoder.aacLc, // specify the encoder
+          encoder: AudioEncoder.wav, // specify the encoder
         );
         _recordState = RecordState.record;
       }

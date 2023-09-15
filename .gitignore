@@ -72,3 +72,7 @@ assets/firebase_service.json
 assets/google_api_service.json
 assets/google_api_key.json
 
+# other config
+assets/config.json
+
+
