@@ -20,7 +20,7 @@ class SttService {
     final jsonStr = await rootBundle.loadString('assets/config.json');
     final jsonMap = jsonDecode(jsonStr);
     print(jsonMap);
-    return jsonMap['api_url'] as String;
+    return jsonMap['stt_api_url'] as String;
   }
 
   Future<String> transcribeAudio(File audioFile) async {

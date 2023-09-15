@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'stt_service.dart';
 import 'audio_service.dart'; // 오디오 처리 파일 import
 import 'permission_service.dart'; // 권한 처리 파일 import
+import 'chat_service.dart'; // 챗봇 API 처리 파일
 import 'package:record/record.dart';
 
 void main() {
@@ -33,6 +34,8 @@ class _MyHomePageState extends State<MyHomePage> {
   late AudioService audioService;
   late File audioFile;
   late PermissionService permissionService;
+  late ChatService chatService;
+  List<Map<String, dynamic>> chatLogs = [];
 
   @override
   void initState() {
@@ -40,31 +43,16 @@ class _MyHomePageState extends State<MyHomePage> {
     audioService = AudioService();
     _prepareAudioFile();
     permissionService = PermissionService();
+    _initChatService();
+  }
+
+  Future<void> _initChatService() async {
+    chatService = await ChatService.create(); // NEW
   }
 
   Future<void> _prepareAudioFile() async {
     final directory = await getApplicationDocumentsDirectory();
     audioFile = File('${directory.path}/audio_sample.wav');
-  }
-
-  Future<void> _doTranscription() async {
-    setState(() {});
-    final sttService = await SttService.create();
-    String text = "";
-    try {
-      text = await sttService.transcribeAudio(audioFile);
-    } catch (e) {
-      if (e.toString() == "Exception: STT 결과 없음") {
-        print("STT 결과 없음");
-        text = ""; // STT 결과가 없을 때는 공백을 반환
-      } else {
-        // 그 외의 예외를 처리 (필요하다면)
-      }
-    }
-    print("STT 결과: $text");
-    setState(() {
-      transcribedText = text;
-    });
   }
 
   Future<void> _startRecording() async {
@@ -91,31 +79,84 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _doTranscription() async {
+    setState(() {});
+    final sttService = await SttService.create();
+    String text = "";
+    try {
+      text = await sttService.transcribeAudio(audioFile);
+    } catch (e) {
+      if (e.toString() == "Exception: STT 결과 없음") {
+        print("STT 결과 없음");
+        text = ""; // STT 결과가 없을 때는 공백을 반환
+      } else {
+        // 그 외의 예외를 처리 (필요하다면)
+      }
+    }
+    print("STT 결과: $text");
+    setState(() {
+      transcribedText = text;
+    });
+  }
+
+  Future<void> _fetchChatResponse(String userText) async {
+    List<Map<String, String>> messages = [
+      {
+        "role": "system",
+        "content":
+            "You are a casual chatbot that likes to discuss movies, music, and general pop culture. You use slang and emojis to keep the conversation fun and light."
+      },
+      {"role": "user", "content": userText}
+    ];
+    String assistantResponse = await chatService.fetchChatResponse(messages);
+    chatLogs.add({'role': 'user', 'content': userText});
+    chatLogs.add({'role': 'assistant', 'content': assistantResponse});
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('STT 예제')),
-      body: Center(
-        child: Column(
-          children: [
-            Text(transcribedText), // 변환된 텍스트 출력
-            ElevatedButton(
-              onPressed: audioService.recordState != RecordState.record
-                  ? _startRecording
-                  : null,
-              child: const Text('STT 시작'),
+      appBar: AppBar(title: const Text('STT and Chat Example')),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: chatLogs.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(chatLogs[index]['content']),
+                  leading: chatLogs[index]['role'] == 'user'
+                      ? Icon(Icons.person_outline)
+                      : null,
+                  trailing: chatLogs[index]['role'] == 'assistant'
+                      ? Icon(Icons.assistant)
+                      : null,
+                );
+              },
             ),
-            ElevatedButton(
-              onPressed: audioService.recordState == RecordState.record
-                  ? () async {
-                      await audioService.stopRecording();
-                      await _doTranscription();
-                    }
-                  : null,
-              child: const Text('STT 종료'),
-            ),
-          ],
-        ),
+          ),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: audioService.recordState != RecordState.record
+                    ? _startRecording
+                    : null,
+                child: const Text('STT Start'),
+              ),
+              ElevatedButton(
+                onPressed: audioService.recordState == RecordState.record
+                    ? () async {
+                        await audioService.stopRecording();
+                        await _doTranscription();
+                        await _fetchChatResponse(transcribedText);
+                      }
+                    : null,
+                child: const Text('STT Stop'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
