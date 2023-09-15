@@ -49,9 +49,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _doTranscription() async {
     setState(() {});
-    final sttService = SttService();
-    final text = await sttService.transcribeAudio(audioFile);
-
+    final sttService = await SttService.create();
+    String text = "";
+    try {
+      text = await sttService.transcribeAudio(audioFile);
+    } catch (e) {
+      if (e.toString() == "Exception: STT 결과 없음") {
+        print("STT 결과 없음");
+        text = ""; // STT 결과가 없을 때는 공백을 반환
+      } else {
+        // 그 외의 예외를 처리 (필요하다면)
+      }
+    }
+    print("STT 결과: $text");
     setState(() {
       transcribedText = text;
     });

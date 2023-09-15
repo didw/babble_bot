@@ -6,10 +6,12 @@ import 'package:http/http.dart' as http;
 class SttService {
   late String apiUrl; // 로딩된 후 초기화될 예정
 
-  SttService() {
-    _loadApiUrl().then((url) {
-      apiUrl = url; // 이 부분은 Flask 서비스의 URL을 설정합니다.
-    });
+  SttService._();
+
+  static Future<SttService> create() async {
+    var service = SttService._();
+    service.apiUrl = await service._loadApiUrl();
+    return service;
   }
 
   Future<String> _loadApiUrl() async {
@@ -17,6 +19,7 @@ class SttService {
     // JSON 파일에 {"api_url": "http://your_flask_service_url/transcribe"} 형태로 저장되어 있어야 합니다.
     final jsonStr = await rootBundle.loadString('assets/config.json');
     final jsonMap = jsonDecode(jsonStr);
+    print(jsonMap);
     return jsonMap['api_url'] as String;
   }
 
@@ -35,7 +38,11 @@ class SttService {
     if (response.statusCode == 200) {
       final responseBody = await response.stream.bytesToString();
       final result = jsonDecode(responseBody);
+      print(result);
       // results는 일반적으로 여러 transcript를 가질 수 있으므로 첫 번째 것만 반환합니다.
+      if (result['transcripts'].isEmpty) {
+        throw Exception('STT 결과 없음');
+      }
       return result['transcripts'][0];
     } else {
       throw Exception('STT API 호출 실패');
