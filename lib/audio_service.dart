@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:record/record.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class AudioService {
   final Record _audioRecorder = Record();
+  final AudioPlayer audioPlayer = AudioPlayer();
   StreamSubscription<RecordState>? _recordSub;
   RecordState _recordState = RecordState.stop;
 
@@ -36,6 +40,19 @@ class AudioService {
       _recordState = RecordState.stop;
     } catch (e) {
       print('Failed to stop recording: $e');
+    }
+  }
+
+  Future<void> playTtsAudio(Uint8List audioData, String savePath) async {
+    try {
+      // 1. Save the audio data to a file
+      final file = File(savePath);
+      await file.writeAsBytes(audioData, flush: true);
+
+      // 2. Play the audio file
+      await audioPlayer.play(DeviceFileSource(savePath));
+    } catch (e) {
+      print("Failed to play TTS audio: $e");
     }
   }
 

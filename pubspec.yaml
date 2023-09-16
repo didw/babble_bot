@@ -38,6 +38,7 @@ dependencies:
   permission_handler: ^11.0.0
   record: ^4.4.4
   path_provider: ^2.1.1
+  audioplayers: ^5.1.0
 
 
   # The following adds the Cupertino Icons font to your application.

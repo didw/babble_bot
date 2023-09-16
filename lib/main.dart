@@ -2,10 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'stt_service.dart';
+import 'tts_service.dart';
 import 'audio_service.dart'; // 오디오 처리 파일 import
 import 'permission_service.dart'; // 권한 처리 파일 import
 import 'chat_service.dart'; // 챗봇 API 처리 파일
 import 'package:record/record.dart';
+import 'dart:typed_data';
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   late File audioFile;
   late PermissionService permissionService;
   late ChatService chatService;
-  List<Map<String, dynamic>> chatLogs = [];
+  late TtsService ttsService;
+  List<Map<String, String>> chatLogs = [];
 
   @override
   void initState() {
@@ -100,18 +103,35 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _fetchChatResponse(String userText) async {
+    chatLogs.add({'role': 'user', 'content': userText});
     List<Map<String, String>> messages = [
       {
         "role": "system",
         "content":
-            "You are a casual chatbot that likes to discuss movies, music, and general pop culture. You use slang and emojis to keep the conversation fun and light."
+            "You are a casual chatbot that likes to discuss movies, music, and general pop culture. You use slang to keep the conversation fun and light. And don't use emojis because response is used in google tts."
       },
-      {"role": "user", "content": userText}
     ];
+    messages.addAll(chatLogs);
     String assistantResponse = await chatService.fetchChatResponse(messages);
-    chatLogs.add({'role': 'user', 'content': userText});
     chatLogs.add({'role': 'assistant', 'content': assistantResponse});
     setState(() {});
+    _speak(assistantResponse);
+  }
+
+  Future<void> _speak(String text) async {
+    // NEW
+    final ttsService = await TtsService.create();
+    try {
+      Uint8List audioData = await ttsService.synthesizeText(text);
+
+      // 파일로 저장할 경로를 정의합니다.
+      final directory = await getApplicationDocumentsDirectory();
+      final audioFilePath = '${directory.path}/tts_audio.wav';
+
+      await audioService.playTtsAudio(audioData, audioFilePath);
+    } catch (e) {
+      print("TTS API 호출 실패: $e");
+    }
   }
 
   @override
@@ -125,12 +145,12 @@ class _MyHomePageState extends State<MyHomePage> {
               itemCount: chatLogs.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(chatLogs[index]['content']),
+                  title: Text(chatLogs[index]['content'] ?? 'Fallback value'),
                   leading: chatLogs[index]['role'] == 'user'
-                      ? Icon(Icons.person_outline)
+                      ? const Icon(Icons.person_outline)
                       : null,
                   trailing: chatLogs[index]['role'] == 'assistant'
-                      ? Icon(Icons.assistant)
+                      ? const Icon(Icons.assistant)
                       : null,
                 );
               },
