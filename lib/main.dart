@@ -108,12 +108,16 @@ class _MyHomePageState extends State<MyHomePage> {
       {
         "role": "system",
         "content":
-            "You are a casual chatbot that likes to discuss movies, music, and general pop culture. You use slang to keep the conversation fun and light. And don't use emojis because response is used in google tts."
+            "You are a casual chatbot that likes to discuss movies, music, and general pop culture. You use slang to keep the conversation fun and light. And don't use emojis because response is used in google tts. response sentence less then 50 words."
       },
     ];
     messages.addAll(chatLogs);
     String assistantResponse = await chatService.fetchChatResponse(messages);
     chatLogs.add({'role': 'assistant', 'content': assistantResponse});
+    if (chatLogs.length > 10) {
+      chatLogs.removeAt(0);
+      chatLogs.removeAt(0);
+    }
     setState(() {});
     _speak(assistantResponse);
   }
