@@ -1,13 +1,15 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'audio_service.dart';
+import 'chat_log_list_tile.dart';
+import 'chat_service.dart';
+import 'permission_service.dart';
+import 'recording_button.dart';
 import 'stt_service.dart';
 import 'tts_service.dart';
-import 'audio_service.dart'; // 오디오 처리 파일 import
-import 'permission_service.dart'; // 권한 처리 파일 import
-import 'chat_service.dart'; // 챗봇 API 처리 파일
-import 'package:record/record.dart';
-import 'dart:typed_data';
 
 void main() {
   runApp(const MyApp());
@@ -141,44 +143,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('STT and Chat Example')),
+      appBar: AppBar(title: const Text('다아라')),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: chatLogs.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(chatLogs[index]['content'] ?? 'Fallback value'),
-                  leading: chatLogs[index]['role'] == 'user'
-                      ? const Icon(Icons.person_outline)
-                      : null,
-                  trailing: chatLogs[index]['role'] == 'assistant'
-                      ? const Icon(Icons.assistant)
-                      : null,
-                );
-              },
-            ),
+            child: ChatLogList(chatLogs),
           ),
-          Row(
-            children: [
-              ElevatedButton(
-                onPressed: audioService.recordState != RecordState.record
-                    ? _startRecording
-                    : null,
-                child: const Text('STT Start'),
-              ),
-              ElevatedButton(
-                onPressed: audioService.recordState == RecordState.record
-                    ? () async {
-                        await audioService.stopRecording();
-                        await _doTranscription();
-                        await _fetchChatResponse(transcribedText);
-                      }
-                    : null,
-                child: const Text('STT Stop'),
-              ),
-            ],
+          RecordingButton(
+            onStartRecording: _startRecording,
+            onStopRecording: () async {
+              await audioService.stopRecording();
+              await _doTranscription();
+            },
+            onFetchResponse: () async {
+              await _fetchChatResponse(transcribedText);
+            },
           ),
         ],
       ),
