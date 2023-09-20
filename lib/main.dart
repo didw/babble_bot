@@ -2,12 +2,12 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:record/record.dart';
 import 'audio_service.dart';
 import 'chat_log_list_tile.dart';
 import 'chat_service.dart';
 import 'permission_service.dart';
 import 'recording_button.dart';
+import 'robot_face.dart';
 import 'stt_service.dart';
 import 'tts_service.dart';
 
@@ -41,10 +41,19 @@ class _MyHomePageState extends State<MyHomePage> {
   late ChatService chatService;
   late TtsService ttsService;
   List<Map<String, String>> chatLogs = [];
+  bool showRobotFace = false;
+  late RobotFace robotFace;
+
+  void toggleView() {
+    setState(() {
+      showRobotFace = !showRobotFace; // 상태를 토글합니다.
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    robotFace = RobotFace();
     audioService = AudioService();
     _prepareAudioFile();
     permissionService = PermissionService();
@@ -125,12 +134,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _speak(String text) async {
-    // NEW
+    robotFace.startBlinking();
+
     final ttsService = await TtsService.create();
     try {
       Uint8List audioData = await ttsService.synthesizeText(text);
 
-      // 파일로 저장할 경로를 정의합니다.
       final directory = await getApplicationDocumentsDirectory();
       final audioFilePath = '${directory.path}/tts_audio.wav';
 
@@ -138,6 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       print("TTS API 호출 실패: $e");
     }
+
+    robotFace.stopBlinking();
   }
 
   @override
@@ -147,10 +158,21 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Expanded(
-            child: ChatLogList(chatLogs),
+            child: Stack(
+              children: [
+                Visibility(
+                  visible: !showRobotFace,
+                  child: ChatLogList(chatLogs),
+                ),
+                Visibility(
+                  visible: showRobotFace,
+                  child: RobotFace(),
+                ),
+              ],
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 16.0), // 아래쪽에만 패딩을 적용
+            padding: const EdgeInsets.only(bottom: 16.0),
             child: RecordingButton(
               onStartRecording: _startRecording,
               onStopRecording: () async {
@@ -161,6 +183,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 await _fetchChatResponse(transcribedText);
               },
             ),
+          ),
+          ElevatedButton(
+            onPressed: toggleView,
+            child: Text(showRobotFace ? "텍스트 보기" : "로봇 얼굴 보기"),
           ),
         ],
       ),
