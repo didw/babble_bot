@@ -173,20 +173,30 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
-            child: RecordingButton(
-              onStartRecording: _startRecording,
-              onStopRecording: () async {
-                await audioService.stopRecording();
-                await _doTranscription();
-              },
-              onFetchResponse: () async {
-                await _fetchChatResponse(transcribedText);
-              },
+            child: Row(
+              children: [
+                ElevatedButton(
+                  onPressed: toggleView,
+                  child: Text(showRobotFace ? "텍스트 보기" : "로봇 얼굴 보기"),
+                ),
+                Spacer(), // 여기에 Spacer 추가
+                RecordingButton(
+                  onStartRecording: _startRecording,
+                  onStopRecording: () async {
+                    await audioService.stopRecording();
+                    await _doTranscription();
+                  },
+                  onFetchResponse: () async {
+                    await _fetchChatResponse(transcribedText);
+                  },
+                ),
+                Spacer(), // 여기에 Spacer 추가
+                ElevatedButton(
+                  onPressed: toggleView,
+                  child: Text("랜덤 채팅"),
+                ),
+              ],
             ),
-          ),
-          ElevatedButton(
-            onPressed: toggleView,
-            child: Text(showRobotFace ? "텍스트 보기" : "로봇 얼굴 보기"),
           ),
         ],
       ),
