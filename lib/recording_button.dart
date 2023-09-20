@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class RecordingButton extends StatefulWidget {
   final Function() onStartRecording;
-  final Function() onStopRecording;
+  // final Function() onStopRecording;
+  final Future<void> Function() onStopRecording;
   final Function() onFetchResponse;
 
   const RecordingButton({
@@ -30,10 +31,10 @@ class _RecordingButtonState extends State<RecordingButton> {
             });
             break;
           case RecordButtonState.recording:
-            widget.onStopRecording();
             setState(() {
               recordButtonState = RecordButtonState.waiting;
             });
+            await widget.onStopRecording();
             await widget.onFetchResponse();
             setState(() {
               recordButtonState = RecordButtonState.idle;

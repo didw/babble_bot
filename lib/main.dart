@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late TtsService ttsService;
   List<Map<String, String>> chatLogs = [];
   bool showRobotFace = false;
+
   late RobotFace robotFace;
 
   void toggleView() {
@@ -123,6 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     ];
     messages.addAll(chatLogs);
+    print(messages);
     String assistantResponse = await chatService.fetchChatResponse(messages);
     chatLogs.add({'role': 'assistant', 'content': assistantResponse});
     if (chatLogs.length > 10) {
@@ -134,8 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _speak(String text) async {
-    robotFace.startBlinking();
-
     final ttsService = await TtsService.create();
     try {
       Uint8List audioData = await ttsService.synthesizeText(text);
@@ -147,8 +147,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       print("TTS API 호출 실패: $e");
     }
-
-    robotFace.stopBlinking();
   }
 
   @override
@@ -192,8 +190,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Spacer(), // 여기에 Spacer 추가
                 ElevatedButton(
-                  onPressed: toggleView,
-                  child: Text("랜덤 채팅"),
+                  onPressed: () {
+                    chatLogs.clear();
+                    setState(() {});
+                  },
+                  child: Text("Clear"),
                 ),
               ],
             ),

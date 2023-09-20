@@ -1,34 +1,19 @@
 import 'package:flutter/material.dart';
 
 class RobotFace extends StatefulWidget {
-  late final void Function() startBlinking;
-  late final void Function() stopBlinking;
+  RobotFace();
+
   @override
   _RobotFaceState createState() => _RobotFaceState();
 }
 
 class _RobotFaceState extends State<RobotFace>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    );
-    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
-  }
-
-  void startBlinking() {
-    _controller.repeat(reverse: true);
-  }
-
-  void stopBlinking() {
-    _controller.stop();
-    _controller.reset();
   }
 
   @override
@@ -53,7 +38,6 @@ class _RobotFaceState extends State<RobotFace>
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 }
