@@ -149,15 +149,18 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
             child: ChatLogList(chatLogs),
           ),
-          RecordingButton(
-            onStartRecording: _startRecording,
-            onStopRecording: () async {
-              await audioService.stopRecording();
-              await _doTranscription();
-            },
-            onFetchResponse: () async {
-              await _fetchChatResponse(transcribedText);
-            },
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0), // 아래쪽에만 패딩을 적용
+            child: RecordingButton(
+              onStartRecording: _startRecording,
+              onStopRecording: () async {
+                await audioService.stopRecording();
+                await _doTranscription();
+              },
+              onFetchResponse: () async {
+                await _fetchChatResponse(transcribedText);
+              },
+            ),
           ),
         ],
       ),

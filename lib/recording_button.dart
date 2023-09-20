@@ -44,24 +44,28 @@ class _RecordingButtonState extends State<RecordingButton> {
             break;
         }
       },
-      child: Text(getButtonText()),
+      child: getButtonChild(),
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-        textStyle: const TextStyle(fontSize: 20),
+        padding: EdgeInsets.all(16.0),
+        shape: CircleBorder(), // 원형 버튼
       ),
     );
   }
 
-  String getButtonText() {
+  Widget getButtonChild() {
     switch (recordButtonState) {
       case RecordButtonState.idle:
-        return "발화 시작";
+        return Icon(Icons.mic, size: 24.0);
       case RecordButtonState.recording:
-        return "발화 종료";
+        return Icon(Icons.stop, size: 24.0);
       case RecordButtonState.waiting:
-        return "응답 대기";
+        return SizedBox(
+          width: 24.0,
+          height: 24.0,
+          child: CircularProgressIndicator(color: Colors.white),
+        );
       default:
-        return "";
+        return Icon(Icons.error, size: 24.0);
     }
   }
 }
