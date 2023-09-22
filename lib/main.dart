@@ -3,13 +3,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'services/audio_service.dart';
-import 'widgets/chat_log_list_tile.dart';
 import 'services/chat_service.dart';
 import 'services/permission_service.dart';
-import 'widgets/recording_button.dart';
-import 'widgets/robot_face.dart';
 import 'services/stt_service.dart';
 import 'services/tts_service.dart';
+import 'widgets/chat_log_list_tile.dart';
+import 'widgets/recording_button.dart';
+import 'widgets/robot_face.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,8 +61,20 @@ class _MyHomePageState extends State<MyHomePage> {
     _initChatService();
   }
 
+  @override
+  void dispose() {
+    // 여기에 필요한 리소스 해제 로직 추가
+    audioService.dispose(); // 예시: audioService에 dispose 메서드가 있다면 호출
+    super.dispose();
+  }
+
   Future<void> _initChatService() async {
-    chatService = await ChatService.create(); // NEW
+    try {
+      chatService = await ChatService.create();
+    } catch (e) {
+      print("ChatService 초기화 오류: $e");
+      // 사용자에게 오류 메시지를 보여줄 수도 있습니다.
+    }
   }
 
   Future<void> _prepareAudioFile() async {
