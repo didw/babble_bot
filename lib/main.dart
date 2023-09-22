@@ -2,14 +2,14 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'audio_service.dart';
-import 'chat_log_list_tile.dart';
-import 'chat_service.dart';
-import 'permission_service.dart';
-import 'recording_button.dart';
-import 'robot_face.dart';
-import 'stt_service.dart';
-import 'tts_service.dart';
+import 'services/audio_service.dart';
+import 'widgets/chat_log_list_tile.dart';
+import 'services/chat_service.dart';
+import 'services/permission_service.dart';
+import 'widgets/recording_button.dart';
+import 'widgets/robot_face.dart';
+import 'services/stt_service.dart';
+import 'services/tts_service.dart';
 
 void main() {
   runApp(const MyApp());
