@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
 
-class RobotFace extends StatefulWidget {
-  RobotFace();
-
-  @override
-  _RobotFaceState createState() => _RobotFaceState();
-}
-
-class _RobotFaceState extends State<RobotFace>
-    with SingleTickerProviderStateMixin {
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class RobotFace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Row(
@@ -27,10 +12,5 @@ class _RobotFaceState extends State<RobotFace>
         ),
       ],
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
