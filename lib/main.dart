@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'screens/call_screen.dart';
+import 'screens/home_screen.dart';
 import 'services/audio_service.dart';
 import 'services/chat_service.dart';
 import 'services/permission_service.dart';
@@ -20,9 +22,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(),
+    return MaterialApp(
+      initialRoute: '/home',  // 초기 화면을 home_screen으로 설정
+      routes: {
+        '/home': (context) => const MyHomePage(),
+        '/call': (context) => const CallScreen(),
+      },
     );
+  }
   }
 }
 
@@ -164,7 +171,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('다아라')),
+      appBar: AppBar(
+        title: const Text('다아라'),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+        onPressed: () {
+          Navigator.of(context).pushNamed('/home');  // home_screen으로 이동
+    },
+  ),
+      ),
       body: Column(
         children: [
           Expanded(
