@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    robotFace = RobotFace();
+    robotFace = const RobotFace();
     audioService = AudioService();
     _prepareAudioFile();
     permissionService = PermissionService();
@@ -164,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Visibility(
                   visible: showRobotFace,
-                  child: RobotFace(),
+                  child: const RobotFace(),
                 ),
               ],
             ),
@@ -177,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: toggleView,
                   child: Text(showRobotFace ? "텍스트 보기" : "로봇 얼굴 보기"),
                 ),
-                Spacer(), // 여기에 Spacer 추가
+                const Spacer(), // 여기에 Spacer 추가
                 RecordingButton(
                   onStartRecording: _startRecording,
                   onStopRecording: () async {
@@ -188,13 +188,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     await _fetchChatResponse(transcribedText);
                   },
                 ),
-                Spacer(), // 여기에 Spacer 추가
+                const Spacer(), // 여기에 Spacer 추가
                 ElevatedButton(
                   onPressed: () {
                     chatLogs.clear();
                     setState(() {});
                   },
-                  child: Text("Clear"),
+                  child: const Text("Clear"),
                 ),
               ],
             ),

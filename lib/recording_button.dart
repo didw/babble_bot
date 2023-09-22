@@ -6,7 +6,7 @@ class RecordingButton extends StatefulWidget {
   final Future<void> Function() onStopRecording;
   final Function() onFetchResponse;
 
-  const RecordingButton({
+  const RecordingButton({super.key, 
     required this.onStartRecording,
     required this.onStopRecording,
     required this.onFetchResponse,
@@ -45,28 +45,28 @@ class _RecordingButtonState extends State<RecordingButton> {
             break;
         }
       },
-      child: getButtonChild(),
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(16.0),
-        shape: CircleBorder(), // 원형 버튼
+        padding: const EdgeInsets.all(16.0),
+        shape: const CircleBorder(), // 원형 버튼
       ),
+      child: getButtonChild(),
     );
   }
 
   Widget getButtonChild() {
     switch (recordButtonState) {
       case RecordButtonState.idle:
-        return Icon(Icons.mic, size: 24.0);
+        return const Icon(Icons.mic, size: 24.0);
       case RecordButtonState.recording:
-        return Icon(Icons.stop, size: 24.0);
+        return const Icon(Icons.stop, size: 24.0);
       case RecordButtonState.waiting:
-        return SizedBox(
+        return const SizedBox(
           width: 24.0,
           height: 24.0,
           child: CircularProgressIndicator(color: Colors.white),
         );
       default:
-        return Icon(Icons.error, size: 24.0);
+        return const Icon(Icons.error, size: 24.0);
     }
   }
 }

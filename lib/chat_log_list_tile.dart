@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ChatLogList extends StatefulWidget {
   final List<Map<String, String>> chatLogs;
 
-  ChatLogList(this.chatLogs);
+  const ChatLogList(this.chatLogs, {super.key});
 
   @override
   _ChatLogListState createState() => _ChatLogListState();
@@ -29,7 +29,7 @@ class _ChatLogListState extends State<ChatLogList> {
       // 새로운 채팅이 추가되면 맨 아래로 스크롤합니다.
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
     }
