@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 class RobotFace extends StatelessWidget {
-  const RobotFace({super.key});
+  const RobotFace({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.face,
-          size: 200,
-        ),
-      ],
+    return Center(
+      child: Image.asset(
+        'assets/daara.jpeg',
+        width: 400,
+        height: 300,
+        fit: BoxFit.cover,
+      ),
     );
   }
 }

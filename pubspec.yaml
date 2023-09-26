@@ -71,6 +71,7 @@ flutter:
   assets:
     - assets/firebase_service.json
     - assets/config.json
+    - assets/daara.jpeg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

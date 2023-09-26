@@ -23,13 +23,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/home',  // 초기 화면을 home_screen으로 설정
+      initialRoute: '/home', // 초기 화면을 home_screen으로 설정
       routes: {
         '/home': (context) => const MyHomePage(),
         '/call': (context) => const CallScreen(),
       },
     );
-  }
   }
 }
 
@@ -175,10 +174,10 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('다아라'),
         leading: IconButton(
           icon: const Icon(Icons.home),
-        onPressed: () {
-          Navigator.of(context).pushNamed('/home');  // home_screen으로 이동
-    },
-  ),
+          onPressed: () {
+            Navigator.of(context).pushNamed('/home'); // home_screen으로 이동
+          },
+        ),
       ),
       body: Column(
         children: [
